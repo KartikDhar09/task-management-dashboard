@@ -24,7 +24,13 @@ export const loginUser = createAsyncThunk(
     }
 
     try {
-      // Create session and get user details
+      // Check if there's an existing session
+      const currentSession = await account.getSession('current');
+      if (currentSession) {
+        await account.deleteSession('current');
+      }
+
+      // Create new session and get user details
       const session = await account.createEmailPasswordSession(email, password);
       const user = await account.get();
       
@@ -37,7 +43,6 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
-
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, name }, { rejectWithValue }) => {
