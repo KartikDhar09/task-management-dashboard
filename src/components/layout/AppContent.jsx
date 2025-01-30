@@ -19,13 +19,7 @@ export const AppContent = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      console.log("Auth state fully updated:", { isAuthenticated, user });
-    }
-  }, [isAuthenticated, user]);
-
-  const handleSearchUpdate = (results, isActive) => {
+   const handleSearchUpdate = (results, isActive) => {
     setSearchResults(results);
     setIsSearching(isActive);
   };
