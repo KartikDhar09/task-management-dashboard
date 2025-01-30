@@ -22,27 +22,27 @@ export const loginUser = createAsyncThunk(
     if (!email || !password) {
       return rejectWithValue('Email and password are required');
     }
-
     try {
-      // Check if there's an existing session
-      const currentSession = await account.getSession('current');
-      if (currentSession) {
-        await account.deleteSession('current');
-      }
-
-      // Create new session and get user details
+      // Create session and get user details
       const session = await account.createEmailPasswordSession(email, password);
       const user = await account.get();
       
-      // Fetch user's tasks after successful login
+      // Store the session/user data first
+      const authData = { session, user };
+      
+      // Wait for the auth state to be updated before fetching tasks
+      await dispatch(authSlice.actions.setAuth(authData));
+      
+      // Now fetch user's tasks
       await dispatch(fetchUserTasks(user.$id));
       
-      return { session, user };
+      return authData;
     } catch (error) {
       return rejectWithValue(handleAppwriteError(error));
     }
   }
 );
+
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, name }, { rejectWithValue }) => {
