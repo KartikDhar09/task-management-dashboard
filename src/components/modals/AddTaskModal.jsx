@@ -109,7 +109,8 @@ const{isLoading}=useSelector(
 
         {/* Description Input */}
         <div className="space-y-2">
-          <Label htmlFor="description" className="text-sm sm:text-base">Description</Label>
+          <Label htmlFor="description" className="text-sm sm:text-base">Description 
+            <span className='text-xs'> 500 words</span></Label>
           <Textarea
             id="description"
             value={newTask.description}
