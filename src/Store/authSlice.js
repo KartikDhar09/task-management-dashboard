@@ -22,21 +22,30 @@ export const loginUser = createAsyncThunk(
     if (!email || !password) {
       return rejectWithValue('Email and password are required');
     }
+
     try {
-      // Create session and get user details
+      // Create new session directly without trying to manage existing sessions
       const session = await account.createEmailPasswordSession(email, password);
+      
+      if (!session) {
+        throw new Error('Failed to create session');
+      }
+
+      // Get user details
       const user = await account.get();
       
-      // Store the session/user data first
-      const authData = { session, user };
-      
-      // Wait for the auth state to be updated before fetching tasks
-      await dispatch(authSlice.actions.setAuth(authData));
-      
-      // Now fetch user's tasks
-      await dispatch(fetchUserTasks(user.$id));
-      
-      return authData;
+      if (!user) {
+        throw new Error('Failed to fetch user details');
+      }
+
+      // Fetch user's tasks after successful login
+      try {
+        await dispatch(fetchUserTasks(user.$id));
+      } catch (taskError) {
+        console.error('Failed to fetch tasks:', taskError);
+      }
+
+      return { session, user };
     } catch (error) {
       return rejectWithValue(handleAppwriteError(error));
     }
