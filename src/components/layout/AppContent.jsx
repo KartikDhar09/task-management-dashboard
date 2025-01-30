@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import { useSelector } from 'react-redux';
 
-import { useTheme } from '../../context/ThemeContext.jsx';
 import { AuthProvider } from '../../context/AuthContext.jsx';
 import { TaskProvider } from '../../context/TaskContext.jsx';
 
@@ -14,7 +13,6 @@ import AuthPage from '../authPage/AuthPage.jsx';
 export const AppContent = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   
-  const { isDarkMode } = useTheme();
   
   const { isMobile } = useResponsive();
   
@@ -41,7 +39,7 @@ export const AppContent = () => {
   }
 
   return (
-    <TaskProvider isDarkMode={isDarkMode}>
+    <TaskProvider>
       <MainContent 
         isMobile={isMobile}
         searchResults={searchResults}

@@ -65,8 +65,7 @@ export const AuthProvider = ({ children }) => {
       
       setShowRegister(false);
     } catch (error) {
-      console.error("Registration error:", error);
-      setAuthError('An unexpected error occurred. Please try again.');
+      setAuthError(error||'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
       // Clear error message after 5 seconds
@@ -89,7 +88,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("isAuthenticated", "true");
       }
     } catch (error) {
-      setAuthError(error.message || "Login failed");
+      setAuthError(error || "Login failed");
     } finally {
       setIsLoading(false);
     }

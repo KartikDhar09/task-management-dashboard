@@ -12,6 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from '../../context/ThemeContext.jsx';
+import { useTasks } from '../../context/TaskContext.jsx';
 
 const ASSIGNEE_COLORS = [
   'bg-blue-100 text-blue-800',
@@ -54,16 +56,16 @@ const TaskDescription = ({ description, isExpanded, setIsExpanded, isDarkMode })
 const TaskCard = ({
   task,
   board,
-  filteredBoards,
-  isDarkMode,
-  handleEditClick,
-  handleDeleteClick,
-  handleMoveTask,
-  getPriorityStyles,
+  filteredBoards
+  
 }) => {
+  const{handleEditClick,
+    handleDeleteClick,
+    handleMoveTask,
+    getPriorityStyles}=useTasks()
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMoveDropdownOpen, setIsMoveDropdownOpen] = useState(false);
-
+const{isDarkMode}=useTheme()
   if (!task?.$id) return null;
 
   const taskKey = task.$id || task.id || `${task.title}-${Date.now()}`;

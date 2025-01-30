@@ -5,6 +5,7 @@ import { Plus, ArrowRight, Info, MoveRight, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
+import { useTheme } from '../../context/ThemeContext.jsx';
 
 const EMPTY_STATES = {
   newTasks: {
@@ -27,8 +28,8 @@ const EMPTY_STATES = {
   }
 };
 
-const EmptyState = ({ boardId = 'completed', isDarkMode, onAddTask }) => {
- 
+const EmptyState = ({ boardId = 'completed', onAddTask }) => {
+ const{isDarkMode}=useTheme()
   const content = useMemo(() => EMPTY_STATES[boardId] || EMPTY_STATES.completed, [boardId]);
 
   const themeClasses = {

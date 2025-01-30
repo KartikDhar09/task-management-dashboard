@@ -26,6 +26,7 @@ import EmptyState from "./EmptyState.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { useTasks } from "../../context/TaskContext.jsx";
 import LoadingScreen from "../../components/LoadingScreen.jsx";
+import { useResponsive } from "../../hooks/useResponsive.js";
 
 const BOARD_COLORS = {
   newTasks: "violet",
@@ -34,21 +35,14 @@ const BOARD_COLORS = {
 };
 
 const TaskBoard = ({
-  filteredBoards,
-  isMobile,
+  filteredBoards 
 }) => {
   const { isDarkMode } = useTheme();
   const [selectedBoardView, setSelectedBoardView] = useState("newTasks");
   const [expandedBoards, setExpandedBoards] = useState({});
-
+  const{isMobile}=useResponsive()
   const {
-    handleAddCard,
-    handleEditClick,
-    handleDeleteClick,
-    handleMoveTask,
-    getPriorityStyles,
-    loading
-  } = useTasks();
+    handleAddCard,loading} = useTasks();
 
   const getBoardColor = useCallback((boardId) => {
     return BOARD_COLORS[boardId] || "slate";
@@ -60,10 +54,8 @@ const TaskBoard = ({
       [boardId]: !prev[boardId],
     }));
   }, []);
-
   const mobileBoardButtons = useMemo(() => {
     if (!isMobile) return null;
-    
     return (
       <div className="flex flex-wrap justify-center gap-2 px-2 py-2 sticky top-0 z-10 bg-inherit">
         {filteredBoards.map((board) => (
@@ -96,10 +88,6 @@ const TaskBoard = ({
                 selectedBoardView={selectedBoardView}
                 isExpanded={expandedBoards[board.id]}
                 handleAddCard={handleAddCard}
-                handleEditClick={handleEditClick}
-                handleDeleteClick={handleDeleteClick}
-                handleMoveTask={handleMoveTask}
-                getPriorityStyles={getPriorityStyles}
                 getBoardColor={getBoardColor}
                 onToggle={() => toggleBoard(board.id)}
                 filteredBoards={filteredBoards}
@@ -156,10 +144,6 @@ const BoardCard = React.memo(({
   selectedBoardView,
   isExpanded,
   handleAddCard,
-  handleEditClick,
-  handleDeleteClick,
-  handleMoveTask,
-  getPriorityStyles,
   getBoardColor,
   onToggle,
   filteredBoards,
@@ -203,10 +187,6 @@ const BoardCard = React.memo(({
           board={board}
           isDarkMode={isDarkMode}
           handleAddCard={handleAddCard}
-          handleEditClick={handleEditClick}
-          handleDeleteClick={handleDeleteClick}
-          handleMoveTask={handleMoveTask}
-          getPriorityStyles={getPriorityStyles}
           filteredBoards={filteredBoards}
         />
       )}
@@ -342,20 +322,14 @@ const BoardHeader = React.memo(({
 
 const BoardContent = React.memo(({
   board,
-  isDarkMode,
   handleAddCard,
-  handleEditClick,
-  handleDeleteClick,
-  handleMoveTask,
-  getPriorityStyles,
-  filteredBoards,
+  filteredBoards
 }) => (
   <div className="p-4">
     <div className="space-y-4">
       {board.tasks.length === 0 ? (
         <EmptyState
           boardId={board.id}
-          isDarkMode={isDarkMode}
           onAddTask={() => handleAddCard(board.id)}
         />
       ) : (
@@ -373,11 +347,6 @@ const BoardContent = React.memo(({
                 task={task}
                 board={board}
                 filteredBoards={filteredBoards}
-                isDarkMode={isDarkMode}
-                handleEditClick={handleEditClick}
-                handleDeleteClick={handleDeleteClick}
-                handleMoveTask={handleMoveTask}
-                getPriorityStyles={getPriorityStyles}
               />
             </div>
           ))}
