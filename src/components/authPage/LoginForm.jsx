@@ -1,31 +1,39 @@
-// LoginForm.jsx
 import React, { useState, useEffect } from 'react';
+
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
 import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const LoginForm = () => {
-  const { setShowRegister, handleLogin, authError, isLoading } = useAuth();
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [formError, setFormError] = useState('');
 
+  const { setShowRegister, handleLogin, authError, isLoading } = useAuth();
+
+  // Initialize state for form management
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);  
+  const [formError, setFormError] = useState('');  
+
+  // Clear form error message after 2 seconds
   useEffect(() => {
     if (formError) {
       const timer = setTimeout(() => setFormError(''), 2000);
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer); 
     }
   }, [formError]);
+
 
   const validateForm = () => {
     if (!credentials.email || !credentials.password) {
       setFormError('Please fill in all fields');
       return false;
     }
+    // Basic email format validation using regex
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
       setFormError('Please enter a valid email address');
       return false;
@@ -33,6 +41,7 @@ const LoginForm = () => {
     return true;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -44,6 +53,7 @@ const LoginForm = () => {
     }
   };
 
+  // Handle input changes and clear any existing form errors
   const handleChange = ({ target: { id, value } }) => {
     setCredentials(prev => ({ ...prev, [id]: value }));
     setFormError('');
@@ -74,6 +84,8 @@ const LoginForm = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
+
+            {/* Map through input field configurations */}
             {[
               { id: 'email', label: 'Email', icon: Mail },
               { id: 'password', label: 'Password', icon: Lock }
@@ -95,6 +107,8 @@ const LoginForm = () => {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
+
+                  {/* Toggle password visibility button */}
                   {id === 'password' && (
                     <button
                       type="button"
@@ -136,6 +150,7 @@ const LoginForm = () => {
             </div>
           </div>
 
+          {/* Register button */}
           <Button
             type="button"
             variant="outline"

@@ -1,24 +1,29 @@
-// RegisterForm.jsx - Similar updates needed
 import React, { useState } from 'react';
+
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Loader2, User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const RegisterForm = () => {
+
   const { setShowRegister, handleRegister, authError, isLoading } = useAuth();
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); 
+  const [error, setError] = useState(''); 
 
+ 
   const validateForm = () => {
     if (!formData.username.trim()) return 'Username is required';
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) return 'Valid email is required';
@@ -27,18 +32,29 @@ const RegisterForm = () => {
     return '';
   };
 
+   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationError = validateForm();
     if (!validationError) {
+      
+      // Remove confirmPassword from data before sending to API
       const { confirmPassword, ...registrationData } = formData;
-      registrationData.name = registrationData.username;
+
+      registrationData.name = registrationData.username; // Map username to name field
       await handleRegister(registrationData);
     } else {
       setError(validationError);
       setTimeout(() => setError(''), 5000);
     }
   };
+
+  const formFields = [
+    { name: 'username', label: 'Username', icon: User, type: 'text' },
+    { name: 'email', label: 'Email', icon: Mail, type: 'email' },
+    { name: 'password', label: 'Password', icon: Lock, type: 'password' },
+    { name: 'confirmPassword', label: 'Confirm Password', icon: Lock, type: 'password' }
+  ];
 
   return (
     <Card className="w-full bg-white/95 dark:bg-slate-900/95">
@@ -49,7 +65,6 @@ const RegisterForm = () => {
       </CardHeader>
 
       <CardContent>
-        
         {(error || authError) && (
           <Alert 
             variant="destructive" 
@@ -62,16 +77,12 @@ const RegisterForm = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {[
-            { name: 'username', label: 'Username', icon: User, type: 'text' },
-            { name: 'email', label: 'Email', icon: Mail, type: 'email' },
-            { name: 'password', label: 'Password', icon: Lock, type: 'password' },
-            { name: 'confirmPassword', label: 'Confirm Password', icon: Lock, type: 'password' }
-          ].map(({ name, label, icon: Icon, type }) => (
+          {formFields.map(({ name, label, icon: Icon, type }) => (
             <div key={name} className="space-y-2">
               <Label htmlFor={name}>{label}</Label>
               <div className="relative">
                 <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                
                 <Input
                   id={name}
                   name={name}
@@ -82,6 +93,8 @@ const RegisterForm = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, [name]: e.target.value }))}
                   disabled={isLoading}
                 />
+
+                {/* Show/hide password toggle for password fields */}
                 {type === 'password' && (
                   <button
                     type="button"
@@ -110,6 +123,7 @@ const RegisterForm = () => {
             )}
           </Button>
 
+          {/* Sign in button */}
           <div className="text-center text-sm text-gray-500">
             Already have an account?{' '}
             <Button

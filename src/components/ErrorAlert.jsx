@@ -1,5 +1,5 @@
-// src/components/common/ErrorAlert.jsx
 import React from 'react';
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const ErrorAlert = ({ message }) => {

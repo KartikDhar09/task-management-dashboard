@@ -1,6 +1,6 @@
-// src/components/MainContent.jsx
 import React, { useMemo } from 'react';
 import { useTasks } from '../../context/TaskContext.jsx';
+
 import { Dashboard } from '../dashboard/Dashboard.jsx';
 import { ErrorAlert } from '../ErrorAlert.jsx';
 import Header from '../Header.jsx';
@@ -32,10 +32,10 @@ export const MainContent = ({
       name: board.title,
       value: board.tasks.length,
       color: board.id === "newTasks" 
-        ? "#9333ea" 
+        ? "#9333ea"  
         : board.id === "inProgress"
-        ? "#eab308"
-        : "#16a34a",
+        ? "#eab308"  
+        : "#16a34a", 
     }));
   }, [boards]);
 
@@ -44,6 +44,7 @@ export const MainContent = ({
     const newTasks = boards.find((b) => b.id === "newTasks")?.tasks.length || 0;
     const inProgressTasks = boards.find((b) => b.id === "inProgress")?.tasks.length || 0;
     const completedTasks = boards.find((b) => b.id === "done")?.tasks.length || 0;
+    
     const completionPercentage = totalTasks > 0 
       ? Math.round((completedTasks / totalTasks) * 100) 
       : 0;
@@ -71,6 +72,7 @@ export const MainContent = ({
       <Header onSearchUpdate={handleSearchUpdate} />
       <Dashboard statusData={statusData} statistics={statistics} />
       <TaskBoard filteredBoards={filteredBoards} isMobile={isMobile} />
+      {/* Modal components for task management */}
       <AddTaskModal />
       <EditTaskModal />
       <DeleteConfirmationDialog />

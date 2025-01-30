@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
+
 import { Edit, Trash2, ChevronDown, Users } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Move color mapping outside component to prevent recreation
 const ASSIGNEE_COLORS = [
   'bg-blue-100 text-blue-800',
   'bg-green-100 text-green-800',
@@ -21,7 +22,6 @@ const ASSIGNEE_COLORS = [
   'bg-indigo-100 text-indigo-800'
 ];
 
-// Separate components for better organization and reusability
 const TaskHeader = ({ title, isDarkMode, onEdit, task }) => (
   <h4 className={`font-semibold text-lg truncate ${isDarkMode ? "text-gray-200" : "text-gray-800"}`}>
     {title}
@@ -68,13 +68,11 @@ const TaskCard = ({
 
   const taskKey = task.$id || task.id || `${task.title}-${Date.now()}`;
 
-  // Memoize the assignee color calculation
   const getAssigneeColor = useCallback((name) => {
     const charSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
     return ASSIGNEE_COLORS[charSum % ASSIGNEE_COLORS.length];
   }, []);
 
-  // Memoize the filtered boards to prevent unnecessary recalculations
   const availableBoards = useMemo(() => 
     filteredBoards.filter(b => b.id !== board.id),
     [filteredBoards, board.id]
@@ -125,7 +123,6 @@ const TaskCard = ({
                       </TooltipTrigger>
                       <TooltipContent>Edit Task</TooltipContent>
                     </Tooltip>
-
                     <DropdownMenu 
                       open={isMoveDropdownOpen} 
                       onOpenChange={setIsMoveDropdownOpen}
@@ -135,7 +132,6 @@ const TaskCard = ({
                           Move to
                         </Button>
                       </DropdownMenuTrigger>
-                      
                       <DropdownMenuContent align="end" className="w-48">
                         {availableBoards.map((b) => (
                           <DropdownMenuItem
@@ -148,7 +144,6 @@ const TaskCard = ({
                         ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
-
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button 
@@ -207,5 +202,4 @@ const TaskCard = ({
     </Card>
   );
 };
-
 export default TaskCard;

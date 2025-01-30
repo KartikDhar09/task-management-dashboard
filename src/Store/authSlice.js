@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { account, ID } from '../appwrite/config.js';
 import { fetchUserTasks } from './taskSlice';
 
-
 const handleAppwriteError = (error) => {
   const errorMap = {
     400: 'Invalid input. Check your details.',
@@ -14,18 +13,22 @@ const handleAppwriteError = (error) => {
   return errorMap[error.code] || error.message || 'An unexpected error occurred';
 };
 
-// Async thunks for authentication
+// ============= Async Thunk Actions =============
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { dispatch, rejectWithValue }) => {
+    // Validate input
     if (!email || !password) {
       return rejectWithValue('Email and password are required');
     }
 
     try {
+      // Create session and get user details
       const session = await account.createEmailPasswordSession(email, password);
       const user = await account.get();
       
+      // Fetch user's tasks after successful login
       await dispatch(fetchUserTasks(user.$id));
       
       return { session, user };
@@ -38,20 +41,24 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, name }, { rejectWithValue }) => {
+    // Validate required fields
     if (!email || !password || !name) {
       return rejectWithValue('All fields are required');
     }
 
+    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return rejectWithValue('Invalid email address');
     }
 
+    // Validate password length
     if (password.length < 8) {
       return rejectWithValue('Password must be 8+ characters');
     }
 
     try {
+      // Create new user account
       const user = await account.create(
         ID.unique(),
         email,
@@ -88,6 +95,7 @@ export const checkAuth = createAsyncThunk(
       
       console.log("Authentication successful");
       
+      // Fetch user's tasks after confirming authentication
       await dispatch(fetchUserTasks(user.$id));
       
       return { user };
@@ -98,9 +106,11 @@ export const checkAuth = createAsyncThunk(
   }
 );
 
-// Auth slice
+// ============= Redux Slice =============
+
 const authSlice = createSlice({
   name: 'auth',
+  // Initialize state from localStorage if available
   initialState: {
     user: JSON.parse(localStorage.getItem("authUser")) || null,
     loading: false,
@@ -109,9 +119,11 @@ const authSlice = createSlice({
     registrationError: null,
   },
   reducers: {
+    // Clear any authentication errors
     clearError: (state) => {
       state.error = null;
     },
+    // Manually set authentication state
     setAuthState: (state, action) => {
       state.isAuthenticated = action.payload.isAuthenticated;
       state.user = action.payload.user;
@@ -119,6 +131,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login cases
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -128,6 +141,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
+        // Persist auth state to localStorage
         localStorage.setItem("authUser", JSON.stringify(action.payload.user));
         localStorage.setItem("isAuthenticated", "true");
       })
@@ -136,6 +150,7 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
       })
+      // Registration cases
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.registrationError = null;
@@ -148,13 +163,16 @@ const authSlice = createSlice({
         state.loading = false;
         state.registrationError = action.payload;
       })
+      // Logout cases
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;
+        // Clear auth state from localStorage
         localStorage.removeItem("authUser");
         localStorage.removeItem("isAuthenticated");
       })
+      // Auth check cases
       .addCase(checkAuth.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -164,6 +182,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
+        // Update localStorage with current auth state
         localStorage.setItem("authUser", JSON.stringify(action.payload.user));
         localStorage.setItem("isAuthenticated", "true");
       })
@@ -172,6 +191,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;
+        // Clear auth state from localStorage
         localStorage.removeItem("authUser");
         localStorage.removeItem("isAuthenticated");
       });

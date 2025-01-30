@@ -1,23 +1,26 @@
 import React, { useMemo } from 'react';
+
 import { Plus, ArrowRight, Info, MoveRight, ClipboardList } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
 
 const EMPTY_STATES = {
   newTasks: {
-    icon: ClipboardList,
-    title: "Start Your Task List",
+    icon: ClipboardList, 
+    title: "Start Your Task List", 
     description: "Ready to get organized? Create your first task to get started.",
-    hasButton: true
+    hasButton: true 
   },
   inProgress: {
-    icon: MoveRight,
+    icon: MoveRight, 
     title: "No Tasks In Progress",
     description: "Move tasks here when you start working on them.",
     message: "Tasks will appear here when in progress"
   },
   completed: {
-    icon: Info,
+    icon: Info, 
     title: "No Completed Tasks",
     description: "Tasks will appear here once they're done.",
     message: "Move tasks here when they're completed"
@@ -25,12 +28,13 @@ const EMPTY_STATES = {
 };
 
 const EmptyState = ({ boardId = 'completed', isDarkMode, onAddTask }) => {
+ 
   const content = useMemo(() => EMPTY_STATES[boardId] || EMPTY_STATES.completed, [boardId]);
-  
+
   const themeClasses = {
     container: cn(
       'relative p-8 rounded-xl border-2 border-dashed',
-      'transition-all duration-300 transform hover:scale-[1.02]',
+      'transition-all duration-300 transform hover:scale-[1.02]', // Adds a hover effect for slight scaling.
       isDarkMode ? 'border-gray-700 bg-gray-800/50 text-gray-300' : 'border-gray-200 bg-gray-50/80 text-gray-600'
     ),
     iconWrapper: cn(
@@ -62,7 +66,7 @@ const EmptyState = ({ boardId = 'completed', isDarkMode, onAddTask }) => {
         </Button>
       );
     }
-    
+
     return (
       <div className="mt-6 flex items-center justify-center text-sm">
         <ArrowRight className="w-4 h-4 mr-2" />
@@ -77,7 +81,6 @@ const EmptyState = ({ boardId = 'completed', isDarkMode, onAddTask }) => {
         <div className={themeClasses.iconWrapper}>
           <IconComponent className="w-12 h-12" />
         </div>
-        
         <h3 className={themeClasses.title}>{content.title}</h3>
         <p className={themeClasses.description}>{content.description}</p>
         {renderAction()}

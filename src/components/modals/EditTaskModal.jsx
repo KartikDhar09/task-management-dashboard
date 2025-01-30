@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+
 import {
   Select,
   SelectContent,
@@ -18,8 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
 import { X } from "lucide-react";
+
 import { useTasks } from '../../context/TaskContext.jsx';
+
 import { ErrorAlert } from '../ErrorAlert.jsx';
 import LoadingScreen from '../LoadingScreen.jsx';
 
@@ -32,12 +36,14 @@ const PRIORITY_OPTIONS = [
 const EditTaskModal = () => {
   const [newAssignee, setNewAssignee] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
   const {
     isEditModalOpen, 
     setIsEditModalOpen, 
     taskToEdit, 
     setTaskToEdit, 
-    handleEditSubmit,loading
+    handleEditSubmit,
+    loading
   } = useTasks();
 
   useEffect(() => {
@@ -124,106 +130,105 @@ const EditTaskModal = () => {
   ), [taskToEdit?.assignees, handleRemoveAssignee]);
 
   return (
-    
-      
     <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-    <DialogContent className="w-[95vw] max-w-lg mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-      {loading && <LoadingScreen message={"Saving changes..."}/>}
+      <DialogContent className="w-[95vw] max-w-lg mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        {loading && <LoadingScreen message={"Saving changes..."}/>}
 
-      <DialogHeader className="space-y-2">
-        <DialogTitle className="text-xl sm:text-2xl">Edit Task</DialogTitle>
-        <DialogDescription className="sr-only">
-          Edit task details including title, description, assignees, and priority
-        </DialogDescription>
-      </DialogHeader>
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="text-xl sm:text-2xl">Edit Task</DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit task details including title, description, assignees, and priority
+          </DialogDescription>
+        </DialogHeader>
 
-      <ErrorAlert message={errorMessage} />
+        <ErrorAlert message={errorMessage} />
 
-      <div className="space-y-4 py-4">
-        {/* Title Input */}
-        <div className="space-y-2">
-          <Label htmlFor="title" className="text-sm sm:text-base">Title</Label>
-          <Input
-            id="title"
-            value={taskToEdit?.title || ""}
-            onChange={handleInputChange('title')}
-            required
-            className="w-full"
-          />
-        </div>
-        
-        {/* Description Input */}
-        <div className="space-y-2">
-          <Label htmlFor="description" className="text-sm sm:text-base">Description</Label>
-          <Textarea
-            id="description"
-            value={taskToEdit?.description || ""}
-            onChange={handleInputChange('description')}
-            placeholder="Add task description..."
-            className="w-full min-h-[80px]"
-            rows={3}
-          />
-        </div>
-
-        {/* Assignees Input */}
-        <div className="space-y-2">
-          <Label htmlFor="assignees" className="text-sm sm:text-base">Assignees</Label>
-          <div className="flex flex-col sm:flex-row gap-2">
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-sm sm:text-base">Title</Label>
             <Input
-              id="assignees"
-              value={newAssignee}
-              onChange={(e) => setNewAssignee(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Add assignee"
-              className="flex-1"
+              id="title"
+              value={taskToEdit?.title || ""}
+              onChange={handleInputChange('title')}
+              required
+              className="w-full"
             />
-            <Button 
-              type="button" 
-              onClick={handleAddAssignee}
-              variant="secondary"
-              className="w-full sm:w-auto"
-            >
-              Add
-            </Button>
           </div>
           
-          <div className="mt-2 flex flex-wrap gap-2">
-            {assigneesList}
+          <div className="space-y-2">
+            <Label 
+              htmlFor="description" 
+              className="text-sm sm:text-base flex justify-between items-center w-full"
+            >
+              <span>Description</span>
+              <span className="text-gray-500 text-xs">(max 500 words)</span>
+            </Label>
+            <Textarea
+              id="description"
+              value={taskToEdit?.description || ""}
+              onChange={handleInputChange('description')}
+              placeholder="Add task description..."
+              className="w-full min-h-[80px]"
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="assignees" className="text-sm sm:text-base">Assignees</Label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                id="assignees"
+                value={newAssignee}
+                onChange={(e) => setNewAssignee(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Add assignee"
+                className="flex-1"
+              />
+              <Button 
+                type="button" 
+                onClick={handleAddAssignee}
+                variant="secondary"
+                className="w-full sm:w-auto"
+              >
+                Add
+              </Button>
+            </div>
+            
+            <div className="mt-2 flex flex-wrap gap-2">
+              {assigneesList}
+            </div>
+          </div>
+        
+          <div className="space-y-2">
+            <Label htmlFor="priority" className="text-sm sm:text-base">Priority</Label>
+            <Select
+              value={taskToEdit?.priority || "Low"}
+              onValueChange={handlePriorityChange}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PRIORITY_OPTIONS.map(({ value, label }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      
-        {/* Priority Select */}
-        <div className="space-y-2">
-          <Label htmlFor="priority" className="text-sm sm:text-base">Priority</Label>
-          <Select
-            value={taskToEdit?.priority || "Low"}
-            onValueChange={handlePriorityChange}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {PRIORITY_OPTIONS.map(({ value, label }) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
-      <DialogFooter className="sm:flex-row gap-3">
-        <Button 
-          onClick={handleSubmit}
-          className="w-full sm:w-auto"
-        >
-          Save Changes
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-    
+        <DialogFooter className="sm:flex-row gap-3">
+          <Button 
+            onClick={handleSubmit}
+            className="w-full sm:w-auto"
+          >
+            Save Changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

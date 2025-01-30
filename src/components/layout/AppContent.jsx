@@ -1,17 +1,23 @@
-// src/components/AppContent.jsx
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { useSelector } from 'react-redux';
+
 import { useTheme } from '../../context/ThemeContext.jsx';
 import { AuthProvider } from '../../context/AuthContext.jsx';
 import { TaskProvider } from '../../context/TaskContext.jsx';
+
 import { useResponsive } from '../../hooks/useResponsive.js';
+
 import { MainContent } from './MainContent.jsx';
 import AuthPage from '../authPage/AuthPage.jsx';
 
 export const AppContent = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  
   const { isDarkMode } = useTheme();
+  
   const { isMobile } = useResponsive();
+  
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -31,7 +37,7 @@ export const AppContent = () => {
       <AuthProvider>
         <AuthPage />
       </AuthProvider>
-    );
+    )
   }
 
   return (

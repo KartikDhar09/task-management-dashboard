@@ -1,22 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'; // Added useEffect
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTask, updateTask, deleteTask, clearAllTasks, fetchUserTasks } from '../Store/taskSlice.js'; // Added fetchUserTasks
+import { addTask, updateTask, deleteTask, clearAllTasks, fetchUserTasks } from '../Store/taskSlice.js';
 
 const TaskContext = createContext(null);
 
 export const TaskProvider = ({ children, isDarkMode }) => {
   const dispatch = useDispatch();
+  // Get user and tasks data from Redux store
   const { user } = useSelector((state) => state.auth);
   const { tasks, loading, error } = useSelector((state) => state.tasks);
   
-  // Fetch tasks when component mounts or user changes
+  // Fetch user's tasks when component mounts or user ID changes
   useEffect(() => {
     if (user?.$id) {
       dispatch(fetchUserTasks(user.$id));
     }
   }, [dispatch, user?.$id]);
 
-  // Task-related state
+  // Modal and dialog state management
   const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -24,6 +25,8 @@ export const TaskProvider = ({ children, isDarkMode }) => {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [formErrors, setFormErrors] = useState({ title: "", assignee: "" });
+
+  // Default state for new task creation
   const [newTask, setNewTask] = useState({
     title: "",
     assignees: [],
@@ -32,13 +35,11 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     description: "",
   });
 
-  // Helper function to show errors
   const showError = (message) => {
     setErrorMessage(message);
     setTimeout(() => setErrorMessage(""), 5000);
   };
 
-  // Form validation
   const validateForm = (task) => {
     const errors = {
       title: "",
@@ -58,7 +59,6 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     return errors;
   };
 
-  // Task CRUD operations with loading state handling
   const handleSubmitCard = async () => {
     const errors = validateForm(newTask);
     setFormErrors(errors);
@@ -70,7 +70,7 @@ export const TaskProvider = ({ children, isDarkMode }) => {
         throw new Error("User ID is not available");
       }
 
-      const result = await dispatch(
+      await dispatch(
         addTask({
           taskData: {
             title: newTask.title,
@@ -102,7 +102,7 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     if (!taskToEdit.title || !taskToEdit.assignees?.length) return;
 
     try {
-      const result = await dispatch(
+      await dispatch(
         updateTask({
           taskId: taskToEdit.$id,
           updates: {
@@ -171,7 +171,6 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     }
   };
 
-  // UI handlers
   const handleAddCard = (boardId) => {
     if (boardId !== "newTasks") return;
     setIsAddCardModalOpen(true);
@@ -195,7 +194,6 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     setIsDeleteDialogOpen(true);
   };
 
-  // Priority styles
   const getPriorityStyles = (priority) => {
     const styles = {
       High: {
@@ -244,7 +242,6 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     return isDarkMode ? styles[priority].dark : styles[priority].light;
   };
 
-  // Calculate boards
   const boards = [
     { id: "newTasks", title: "New Tasks", tasks: [] },
     { id: "inProgress", title: "In Progress", tasks: [] },
@@ -254,6 +251,7 @@ export const TaskProvider = ({ children, isDarkMode }) => {
     tasks: tasks.filter((task) => task.status === board.id),
   }));
 
+  // Context value containing all state and handlers
   const value = {
     // State
     isAddCardModalOpen,

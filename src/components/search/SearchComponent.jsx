@@ -1,27 +1,33 @@
 import React, { useState, useCallback, memo } from 'react';
+
 import { Search, X } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+
 import { SearchResults } from './SearchResults.jsx';
 
-export const SearchComponent = memo(({
-  onSearchUpdate,
-  tasks,
+export const SearchComponent = memo(({ 
+  onSearchUpdate, 
+  tasks, 
   className,
-  onClose,
-  isMobile = false
+  onClose, 
+  isMobile = false 
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false); 
 
   const handleSearchUpdate = useCallback((query) => {
     setSearchQuery(query);
+    
     if (!query) {
-      onSearchUpdate([], false);
+      onSearchUpdate([], false); 
       return;
     }
 
     const terms = query.toLowerCase().split(" ").filter(Boolean);
+    
+    // Filter tasks based on search terms
     const matches = tasks.filter(task => {
       const searchText = [
         task.title,
@@ -30,27 +36,29 @@ export const SearchComponent = memo(({
         ...(task.assignees || []),
       ].join(" ").toLowerCase();
       
-      return terms.every(term => searchText.includes(term));
+      return terms.every(term => searchText.includes(term)); 
     });
 
-    onSearchUpdate(matches, true);
+    onSearchUpdate(matches, true); 
   }, [tasks, onSearchUpdate]);
 
+  // Function to clear the search input
   const handleClear = useCallback(() => {
     setSearchQuery("");
-    onSearchUpdate([], false);
+    onSearchUpdate([], false); 
   }, [onSearchUpdate]);
 
   const handleSearchFocus = useCallback((focused) => {
     setIsSearchFocused(focused);
     if (!focused && !searchQuery) {
-      onSearchUpdate([], false);
+      onSearchUpdate([], false); 
     }
   }, [searchQuery, onSearchUpdate]);
 
   return (
     <div className={`relative w-full ${className}`}>
       <div className="relative">
+        {/* Close button for mobile view */}
         {isMobile && (
           <Button
             variant="ghost"
@@ -61,9 +69,13 @@ export const SearchComponent = memo(({
             <X className="h-4 w-4" />
           </Button>
         )}
+        
+        {/* Search icon */}
         <Search 
           className={`absolute ${isMobile ? 'left-10' : 'left-3'} top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500`} 
         />
+        
+        {/* Search input field */}
         <Input
           value={searchQuery}
           onChange={(e) => handleSearchUpdate(e.target.value)}
@@ -72,6 +84,8 @@ export const SearchComponent = memo(({
           placeholder="Search tasks..."
           className={`${isMobile ? 'pl-16' : 'pl-10'} pr-8 h-11 bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500/20`}
         />
+        
+        {/* Clear button (appears when search query is not empty) */}
         {searchQuery && (
           <Button
             size="sm"
@@ -84,6 +98,7 @@ export const SearchComponent = memo(({
         )}
       </div>
       
+      {/* Display search results when input is focused and query is not empty */}
       {isSearchFocused && searchQuery && (
         <SearchResults 
           searchQuery={searchQuery} 
@@ -95,4 +110,4 @@ export const SearchComponent = memo(({
   );
 });
 
-SearchComponent.displayName = 'SearchComponent';
+SearchComponent.displayName = 'SearchComponent'; 

@@ -6,16 +6,23 @@ const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
+  // State to toggle between login and register forms
   const [showRegister, setShowRegister] = useState(false);
+  // State for storing authentication errors
   const [authError, setAuthError] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // Initial state set to true
+  // Loading state for async operations
+  const [isLoading, setIsLoading] = useState(true);
+  // State for displaying temporary error messages
   const [displayError, setDisplayError] = useState("");
 
+  // Effect to check authentication status on component mount
   useEffect(() => {
     const checkSession = async () => {
       try {
+        // Verify if the current session is valid
         await dispatch(checkAuth()).unwrap();
       } catch (error) {
+        // Clear local storage if session is invalid
         localStorage.removeItem("authUser");
         localStorage.removeItem("isAuthenticated");
       } finally {
@@ -23,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
+    // Only check session if user was previously authenticated
     if (localStorage.getItem("isAuthenticated") === "true") {
       checkSession();
     } else {
@@ -30,12 +38,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [dispatch]);
 
+  // Effect to handle temporary error message display
   useEffect(() => {
     setDisplayError(authError);
+    // Clear error message after 2 seconds
     const timer = authError ? setTimeout(() => setDisplayError(null), 2000) : null;
     return () => timer && clearTimeout(timer);
   }, [authError]);
 
+  // Clear error message when switching between login and register forms
   useEffect(() => {
     setDisplayError(null);
   }, [showRegister]);
@@ -45,6 +56,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       const resultAction = await dispatch(registerUser(registerData));
   
+      // Check if registration was rejected
       if (registerUser.rejected.match(resultAction)) {
         const error = resultAction.payload;
         setAuthError(error || 'Registration failed. Please try again.');
@@ -57,6 +69,7 @@ export const AuthProvider = ({ children }) => {
       setAuthError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
+      // Clear error message after 5 seconds
       setTimeout(() => {
         setAuthError('');
       }, 5000);
@@ -70,6 +83,7 @@ export const AuthProvider = ({ children }) => {
 
       const response = await dispatch(loginUser(loginData)).unwrap();
 
+      // Store user data in local storage if login successful
       if (response.user) {
         localStorage.setItem("authUser", JSON.stringify(response.user));
         localStorage.setItem("isAuthenticated", "true");
@@ -81,6 +95,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Context value object containing all necessary state and handlers
   const value = {
     showRegister,
     setShowRegister,
@@ -88,7 +103,6 @@ export const AuthProvider = ({ children }) => {
     isLoading,
     handleRegister,
     handleLogin,
-  
   };
 
   return (

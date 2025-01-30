@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+
 import { ChevronDown } from 'lucide-react';
 
-// Extracted to a separate component for better organization and reusability
 const CustomTooltip = ({ active, payload, totalTasks }) => {
   if (!active || !payload?.length) return null;
   
@@ -30,13 +32,12 @@ const CustomTooltip = ({ active, payload, totalTasks }) => {
   );
 };
 
-// separate component for better organization
 const LegendItem = ({ item }) => (
   <div 
     className="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm hover:scale-105 active:scale-95 transition-transform"
     style={{
       borderColor: item.color,
-      backgroundColor: `${item.color}15`,
+      backgroundColor: `${item.color}15`, 
     }}
   >
     <span 
@@ -52,10 +53,10 @@ const LegendItem = ({ item }) => (
   </div>
 );
 
+
 const TaskDistributionGraph = ({ statusData }) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Memoize the total tasks calculation
   const totalTasks = useMemo(() => 
     statusData.reduce((sum, item) => sum + item.value, 0),
     [statusData]
@@ -90,9 +91,9 @@ const TaskDistributionGraph = ({ statusData }) => {
                 <PieChart>
                   <Pie
                     data={statusData}
-                    innerRadius="55%"
+                    innerRadius="55%" 
                     outerRadius="80%"
-                    paddingAngle={5}
+                    paddingAngle={5} 
                     dataKey="value"
                     cx="50%"
                     cy="50%"

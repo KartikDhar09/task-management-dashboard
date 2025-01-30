@@ -1,43 +1,47 @@
 import React, { useState, useMemo } from 'react';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ClipboardList, CheckCircle, Clock, ListTodo, ChevronDown } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
+import { ClipboardList, CheckCircle, Clock, ListTodo, ChevronDown } from 'lucide-react';
+
 import { useTheme } from '../../context/ThemeContext.jsx';
 
-// Move stats configuration outside component to prevent recreation
+// Configuration for statistics cards
 const STATS_CONFIG = [
   {
     title: 'Total Tasks',
     key: 'totalTasks',
     Icon: ClipboardList,
-    color: '#3b82f6',
+    color: '#3b82f6', // Blue
   },
   {
     title: 'Completed',
     key: 'completedTasks',
     Icon: CheckCircle,
-    color: '#22c55e',
+    color: '#22c55e', // Green
   },
   {
     title: 'In Progress',
     key: 'inProgressTasks',
     Icon: Clock,
-    color: '#f59e0b',
+    color: '#f59e0b', // Amber
   },
   {
     title: 'New Tasks',
     key: 'newTasks',
     Icon: ListTodo,
-    color: '#a855f7',
+    color: '#a855f7', // Purple
   }
 ];
+
 
 const StatCard = ({ title, value, Icon, color }) => (
   <div
     className="p-4 rounded-xl shadow-md transition-transform duration-300 hover:scale-105 active:scale-95"
     style={{ 
       backgroundColor: `${color}15`,
-      borderLeft: `4px solid ${color}`
+      borderLeft: `4px solid ${color}` 
     }}
   >
     <div className="flex items-center justify-between">
@@ -58,17 +62,20 @@ const StatCard = ({ title, value, Icon, color }) => (
   </div>
 );
 
+
 const StatisticsDashboard = ({ statistics }) => {
   const [isOpen, setIsOpen] = useState(false);
-const{isDarkMode}=useTheme()
+  const { isDarkMode } = useTheme();
+
   const statsData = useMemo(() => 
     STATS_CONFIG.map(config => ({
       ...config,
-      value: statistics[config.key] ?? 0
+      value: statistics[config.key] ?? 0 
     })),
     [statistics]
   );
 
+  // Keyboard handler for accessibility
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       setIsOpen(prev => !prev);

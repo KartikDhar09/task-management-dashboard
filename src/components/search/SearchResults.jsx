@@ -1,8 +1,12 @@
 import React, { useRef, useMemo, useCallback, memo } from 'react';
+
 import { motion } from 'framer-motion';
+
 import { useVirtualizer } from '@tanstack/react-virtual';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { User } from 'lucide-react';
 
 const PRIORITY_STYLES = {
@@ -13,11 +17,11 @@ const PRIORITY_STYLES = {
 
 const SearchResultItem = memo(({ task }) => (
   <motion.div
-    initial={{ opacity: 0 }}
+    initial={{ opacity: 0 }} 
     animate={{ opacity: 1 }}
     className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer border-b border-gray-200 dark:border-gray-700 last:border-0 transition-colors duration-200"
   >
-    <div className="flex items-start justify-between ">
+    <div className="flex items-start justify-between">
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-base text-gray-900 dark:text-gray-100 truncate">
           {task.title}
@@ -51,8 +55,9 @@ const SearchResultItem = memo(({ task }) => (
 ));
 
 export const SearchResults = memo(({ searchQuery, tasks, isSearchFocused }) => {
-  const parentRef = useRef(null);
+  const parentRef = useRef(null); 
 
+  // Filter tasks based on the search query
   const filteredResults = useMemo(() => {
     if (!searchQuery) return [];
     const terms = searchQuery.toLowerCase().split(" ").filter(Boolean);
@@ -71,11 +76,12 @@ export const SearchResults = memo(({ searchQuery, tasks, isSearchFocused }) => {
     return result.assignees?.length > 0 ? 128 : 88;
   }, []);
 
+  // Virtualization logic to optimize rendering of large result lists
   const virtualizer = useVirtualizer({
     count: filteredResults.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => getResultHeight(filteredResults[index]),
-    overscan: 5,
+    overscan: 5, 
   });
 
   const getMaxHeight = useCallback(() => {
@@ -85,7 +91,7 @@ export const SearchResults = memo(({ searchQuery, tasks, isSearchFocused }) => {
     const estimatedHeight = filteredResults
       .slice(0, maxItems)
       .reduce((acc, result) => acc + getResultHeight(result), 0);
-    return Math.min(estimatedHeight, 400);
+    return Math.min(estimatedHeight, 400); 
   }, [filteredResults, getResultHeight]);
 
   if (!isSearchFocused || !searchQuery) return null;

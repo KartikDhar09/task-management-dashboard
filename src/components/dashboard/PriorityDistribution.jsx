@@ -1,18 +1,21 @@
 import React, { useState, useMemo } from 'react';
+
 import { AlertTriangle, AlertCircle, CheckCircle2, ChevronDown } from 'lucide-react';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
-// Move constants outside component to prevent recreation
+
 const PRIORITY_CONFIGS = {
-  High: { color: '#ef4444', icon: AlertCircle },
-  Medium: { color: '#f59e0b', icon: AlertTriangle },
-  Low: { color: '#22c55e', icon: CheckCircle2 }
+  High: { color: '#ef4444', icon: AlertCircle },     // Red for high priority
+  Medium: { color: '#f59e0b', icon: AlertTriangle }, // Amber for medium priority
+  Low: { color: '#22c55e', icon: CheckCircle2 }      // Green for low priority
 };
 
-// Separate tooltip component for better organization
+
 const CustomTooltip = ({ active, payload, totalTasks }) => {
   if (!active || !payload?.length) return null;
 
@@ -38,7 +41,9 @@ const CustomTooltip = ({ active, payload, totalTasks }) => {
   );
 };
 
+
 const PriorityDistribution = ({ statistics }) => {
+
   const [isOpen, setIsOpen] = useState(false);
   
   const priorityData = useMemo(() => 
@@ -49,7 +54,7 @@ const PriorityDistribution = ({ statistics }) => {
       icon: config.icon
     })), [statistics.priorities]
   );
-
+  
   const totalTasks = useMemo(() => 
     priorityData.reduce((sum, item) => sum + item.value, 0),
     [priorityData]
@@ -84,9 +89,9 @@ const PriorityDistribution = ({ statistics }) => {
                 <PieChart>
                   <Pie
                     data={priorityData}
-                    innerRadius="55%"
+                    innerRadius="55%"    
                     outerRadius="80%"
-                    paddingAngle={5}
+                    paddingAngle={5}     
                     dataKey="value"
                     cx="50%"
                     cy="50%"
@@ -118,7 +123,7 @@ const PriorityDistribution = ({ statistics }) => {
                     className="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm"
                     style={{
                       borderColor: color,
-                      backgroundColor: `${color}15`,
+                      backgroundColor: `${color}15`, 
                     }}
                   >
                     <Icon 

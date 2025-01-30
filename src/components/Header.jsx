@@ -1,6 +1,9 @@
 import React, { useState, memo } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   MoonStar,
   Sun,
@@ -11,8 +14,8 @@ import {
   LogOut,
   Menu
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -20,8 +23,6 @@ import {
   TooltipTrigger,
   TooltipProvider
 } from "@/components/ui/tooltip";
-import { logoutUser } from "../Store/authSlice";
-
 import {
   Sheet,
   SheetContent,
@@ -29,7 +30,11 @@ import {
   SheetTitle,
   SheetDescription
 } from "@/components/ui/sheet";
+
+import { logoutUser } from "../Store/authSlice";
+
 import { SearchComponent } from './search/SearchComponent.jsx';
+
 import { useTasks } from "../context/TaskContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -42,7 +47,6 @@ const getUserInitials = (name) => {
     .slice(0, 2);
 };
 
-// Mobile Navigation Component
 const MobileNav = ({
   isDarkMode,
   setIsDarkMode,
@@ -55,7 +59,6 @@ const MobileNav = ({
     setIsDarkMode(!isDarkMode);
     onClose();
   };
-
   const handleClearTasks = () => {
     clearTasks();
     onClose();
@@ -75,6 +78,7 @@ const MobileNav = ({
         </div>
       </div>
 
+      {/* Theme Toggle Button */}
       <Button
         variant="outline"
         className="justify-start"
@@ -88,6 +92,7 @@ const MobileNav = ({
         {isDarkMode ? "Light mode" : "Dark mode"}
       </Button>
 
+      {/* Clear Tasks Button */}
       <Button
         variant="outline"
         className="justify-start text-red-500"
@@ -97,6 +102,7 @@ const MobileNav = ({
         Clear all tasks
       </Button>
 
+      {/* Logout Button */}
       <Button
         variant="destructive"
         className="justify-start mt-auto"
@@ -112,9 +118,10 @@ const MobileNav = ({
 const Header = memo(({ onSearchUpdate }) => {
   const dispatch = useDispatch();
   const { isDarkMode, setIsDarkMode } = useTheme();
-  const { isAuthenticated,  user } = useSelector((state) => state.auth);
-  const{tasks}=useSelector((state)=>state.tasks)
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { tasks } = useSelector((state) => state.tasks);
   const handleLogout = () => dispatch(logoutUser());
+  
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { clearTasks } = useTasks();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -131,7 +138,6 @@ const Header = memo(({ onSearchUpdate }) => {
         <div className="max-w-7xl mx-auto">
           <div className="px-4 md:px-6 py-4">
             <div className="flex items-center justify-between gap-4">
-              {/* Logo Section */}
               <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg opacity-75 blur-sm group-hover:opacity-100 transition duration-300" />
@@ -148,7 +154,7 @@ const Header = memo(({ onSearchUpdate }) => {
                 </div>
               </div>
 
-              {/* Center Section for Mobile Search and Menu */}
+              {/* Mobile Navigation Section */}
               <div className="flex items-center gap-2 lg:hidden ml-auto">
                 <Button
                   variant="ghost"
@@ -188,16 +194,15 @@ const Header = memo(({ onSearchUpdate }) => {
                 </Sheet>
               </div>
 
-              {/* Rest of the component remains the same... */}
-              {/* Desktop Search and Actions */}
+              {/* Desktop Navigation Section */}
               <div className="hidden lg:flex items-center gap-3 md:gap-4 flex-1 justify-end">
                 <SearchComponent
                   onSearchUpdate={onSearchUpdate}
                   tasks={tasks}
                   className="md:max-w-lg"
                 />
+                
                 <div className="flex items-center gap-2.5">
-                  {/* Theme Toggle */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -227,8 +232,6 @@ const Header = memo(({ onSearchUpdate }) => {
                       </TooltipContent>
                     </Tooltip>
                   </motion.div>
-
-                  {/* Clear Tasks */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -248,8 +251,6 @@ const Header = memo(({ onSearchUpdate }) => {
                       <TooltipContent>Clear all tasks</TooltipContent>
                     </Tooltip>
                   </motion.div>
-
-                  {/* User Avatar */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -275,8 +276,6 @@ const Header = memo(({ onSearchUpdate }) => {
                       </TooltipContent>
                     </Tooltip>
                   </motion.div>
-
-                  {/* Logout Button */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -312,7 +311,6 @@ const Header = memo(({ onSearchUpdate }) => {
               className="fixed inset-0 z-50 bg-white dark:bg-gray-900 p-4"
             >
               <div className="flex items-center gap-2 mb-4">
-                
                 <SearchComponent
                   onSearchUpdate={onSearchUpdate}
                   tasks={tasks}

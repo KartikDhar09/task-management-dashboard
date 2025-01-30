@@ -1,6 +1,9 @@
 import React, { memo } from 'react';
+
 import { Loader2 } from "lucide-react";
+
 import { useTheme } from '../context/ThemeContext.jsx';
+
 const LoadingScreen = memo(({  message  }) => {
 const{isDarkMode}=useTheme();
   return(

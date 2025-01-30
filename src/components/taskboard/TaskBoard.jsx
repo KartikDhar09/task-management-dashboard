@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
+
 import {
   Plus,
   Clock,
@@ -8,6 +9,7 @@ import {
   Clipboard,
   Inbox,
 } from "lucide-react";
+
 import {
   TooltipProvider,
   Tooltip,
@@ -17,35 +19,37 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
 import TaskCard from "./TaskCard.jsx";
 import EmptyState from "./EmptyState.jsx";
+
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { useTasks } from "../../context/TaskContext.jsx";
-import LoadingScreen from "../LoadingScreen.jsx";
-// Moved outside component to avoid recreation
+import LoadingScreen from "../../components/LoadingScreen.jsx";
+
 const BOARD_COLORS = {
   newTasks: "violet",
   inProgress: "amber",
   done: "emerald",
 };
 
-// Moved outside component to avoid recreation
-
-
 const TaskBoard = ({
   filteredBoards,
-  
   isMobile,
- 
 }) => {
-  const{isDarkMode}=useTheme()
+  const { isDarkMode } = useTheme();
   const [selectedBoardView, setSelectedBoardView] = useState("newTasks");
   const [expandedBoards, setExpandedBoards] = useState({});
-const{ handleAddCard,
-  handleEditClick,
-  handleDeleteClick,
-  handleMoveTask,
-  getPriorityStyles,loading}=useTasks()
+
+  const {
+    handleAddCard,
+    handleEditClick,
+    handleDeleteClick,
+    handleMoveTask,
+    getPriorityStyles,
+    loading
+  } = useTasks();
+
   const getBoardColor = useCallback((boardId) => {
     return BOARD_COLORS[boardId] || "slate";
   }, []);
@@ -57,7 +61,6 @@ const{ handleAddCard,
     }));
   }, []);
 
-  // Memoize board buttons for mobile view
   const mobileBoardButtons = useMemo(() => {
     if (!isMobile) return null;
     
@@ -79,7 +82,7 @@ const{ handleAddCard,
 
   return (
     <div className="flex flex-col h-full">
-      {loading&&<LoadingScreen message={"loading tasks..."}/>}
+      {loading && <LoadingScreen message={"loading tasks..."} />}
       {mobileBoardButtons}
       <ScrollArea className="flex-1">
         <div className="px-4 py-6">
@@ -109,13 +112,12 @@ const{ handleAddCard,
   );
 };
 
-// Extracted to separate component for better memoization
-const MobileBoardButton = React.memo(({ 
-  board, 
-  selectedBoardView, 
-  isDarkMode, 
-  getBoardColor, 
-  onSelect 
+const MobileBoardButton = React.memo(({
+  board,
+  selectedBoardView,
+  isDarkMode,
+  getBoardColor,
+  onSelect
 }) => {
   const boardColor = getBoardColor(board.id);
   
@@ -147,7 +149,6 @@ const MobileBoardButton = React.memo(({
   );
 });
 
-// Extracted Board Card component
 const BoardCard = React.memo(({
   board,
   isDarkMode,
@@ -223,13 +224,12 @@ const BoardHeader = React.memo(({
 }) => {
   const color = getBoardColor(board.id);
 
-  // Select icon based on board type
   const BoardIcon =
     {
       newTasks: Clipboard,
       inProgress: Clock,
       done: CheckCircle,
-    }[board.id] || Inbox; // Default to Inbox if no match
+    }[board.id] || Inbox;
 
   return (
     <div
@@ -340,7 +340,7 @@ const BoardHeader = React.memo(({
   );
 });
 
-const BoardContent =React.memo( ({
+const BoardContent = React.memo(({
   board,
   isDarkMode,
   handleAddCard,

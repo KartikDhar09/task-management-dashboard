@@ -1,17 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { databases, Query, ID } from '../appwrite/config.js';
 
-// Environment configuration
 const DATABASE_ID = import.meta.env.VITE_DB_ID;
 const TASKS_COLLECTION_ID = import.meta.env.VITE_USER_TASKS_COLLECTION;
 
-// Improved error handling with specific error types
 const AppwriteErrors = {
-  INVALID_INPUT: 'INVALID_INPUT',
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  DUPLICATE: 'DUPLICATE',
-  RATE_LIMIT: 'RATE_LIMIT',
-  SERVICE_ERROR: 'SERVICE_ERROR'
+  INVALID_INPUT: 'INVALID_INPUT',    
+  UNAUTHORIZED: 'UNAUTHORIZED',       
+  DUPLICATE: 'DUPLICATE',            
+  RATE_LIMIT: 'RATE_LIMIT',         
+  SERVICE_ERROR: 'SERVICE_ERROR'     
 };
 
 const handleAppwriteError = (error) => {
@@ -28,7 +26,6 @@ const handleAppwriteError = (error) => {
   };
 };
 
-// Optimized validation with early returns
 const validateUserId = (userId) => {
   if (!userId) throw new Error('User ID is required');
   return true;
@@ -39,8 +36,8 @@ const validateTaskId = (taskId) => {
   return true;
 };
 
-// Memoized API operations
 const TasksAPI = {
+  // Deletes all tasks in the collection
   async clearAll() {
     const { documents } = await databases.listDocuments(DATABASE_ID, TASKS_COLLECTION_ID);
     return Promise.all(
@@ -48,6 +45,7 @@ const TasksAPI = {
     );
   },
 
+  // Fetches all tasks for a specific user
   async fetchTasks(userId) {
     return databases.listDocuments(
       DATABASE_ID,
@@ -56,6 +54,7 @@ const TasksAPI = {
     );
   },
 
+  // Creates a new task document
   async createTask(documentData) {
     return databases.createDocument(
       DATABASE_ID,
@@ -65,6 +64,7 @@ const TasksAPI = {
     );
   },
 
+  // Updates an existing task
   async updateTask(taskId, updates) {
     return databases.updateDocument(
       DATABASE_ID,
@@ -74,6 +74,7 @@ const TasksAPI = {
     );
   },
 
+  // Deletes a specific task
   async deleteTask(taskId) {
     return databases.deleteDocument(
       DATABASE_ID,
@@ -83,7 +84,8 @@ const TasksAPI = {
   }
 };
 
-// Optimized async thunks with better error handling
+// Redux Thunk Actions
+
 export const clearAllTasks = createAsyncThunk(
   'tasks/clearAll',
   async (_, { rejectWithValue }) => {
@@ -135,7 +137,7 @@ export const updateTask = createAsyncThunk(
   async ({ taskId, updates }, { rejectWithValue, getState }) => {
     try {
       validateTaskId(taskId);
-      // Optimize updates by only sending changed fields
+      // Filter out undefined values and handle assignee/assignees field naming
       const cleanUpdates = Object.entries(updates)
         .filter(([, value]) => value !== undefined)
         .reduce((acc, [key, value]) => ({
@@ -168,21 +170,22 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
-// Simplified task slice without loadingStates
 const taskSlice = createSlice({
   name: 'tasks',
   initialState: {
-    tasks: [],
-    loading: false,
-    error: null
+    tasks: [],         
+    loading: false,   
+    error: null        
   },
   reducers: {
     clearError: (state) => {
       state.error = null;
     }
   },
+  // Handle all async thunk actions
   extraReducers: (builder) => {
     builder
+      // Fetch tasks cases
       .addCase(fetchUserTasks.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -195,6 +198,7 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Add task cases
       .addCase(addTask.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -207,6 +211,7 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Update task cases
       .addCase(updateTask.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -222,6 +227,7 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Delete task cases
       .addCase(deleteTask.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -234,6 +240,7 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Clear all tasks cases
       .addCase(clearAllTasks.pending, (state) => {
         state.loading = true;
         state.error = null;
