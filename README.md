@@ -1,4 +1,4 @@
-# Modern Task Management Application
+# Task Management Application
 
 This task management application built with React, Redux, and modern web technologies. This application provides user authentication, dashboard analytics, and an interactive task board for efficient project management.
 
